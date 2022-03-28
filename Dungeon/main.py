@@ -1,4 +1,11 @@
 #
+# TODO add balance to the game
+#
+#
+#
+#
+#
+#
 #  biggest project i've done 3/21/22
 #  Nathaniel Masson // Naedrae // Razuul
 #
@@ -7,6 +14,9 @@ import random
 from player import *
 from enemies import *
 import time
+from modules.PIL import ImageTk, Image
+
+
 
 
 # window creation
@@ -18,17 +28,26 @@ e = Entry()
 e.grid
 
 
+frame = Frame(width=500, height=500)
+
+# background creation (obviously)
+
+level_bg = ImageTk.PhotoImage(Image.open("C:/Users/natha/PycharmProjects/Dungeon/images/level_image.jpg"))
+shop_bg = ImageTk.PhotoImage(Image.open("C:/Users/natha/PycharmProjects/Dungeon/images/shop_image.jpg"))
+sidebar_bg = ImageTk.PhotoImage(Image.open("C:/Users/natha/PycharmProjects/Dungeon/images/sidebar_image.jpg"))
+dungeon_bg = ImageTk.PhotoImage(Image.open("C:/Users/natha/PycharmProjects/Dungeon/images/dungeon_image.jpg"))
 
 money = player.money
 player_hpp = player.hp
 playerhp = player.hp
 level = player.level
 reqexp = player.reqexp
-y = player.reqexp
+y = 50
 # Weapons
 def give_money():
     global money
     money = money + 500000
+    bank_info.config(text="Bank: " + str(money))
 def dev_sword1():
     dev_sword = 5000, 5000
     player.dmg = dev_sword
@@ -191,40 +210,66 @@ def restore_health():
     if reqs <= money:
         playerhp = player.hp
         misc_text.insert(1.0, "\n\nPlayer healed!")
+        hp_info.config(text="HP: " + str(playerhp))
+        money = money - reqs
+        bank_info.config(text="Bank: " + str(money))
         root.update(), time.sleep(2)
         misc_text.delete(1.0, "end")
-        money = money - reqs
     if reqs > money:
         misc_text.insert(1.0, "\n\nNot enough money!")
         root.update(), time.sleep(2)
         misc_text.delete(1.0, "end")
-def clear():
-    dungeon_text.delete(1.0, "end")
-def bank_button():
-    misc_text.delete(1.0, "end")
-    misc_text.insert(1.0, "           $" + str(money))
-    root.update(), time.sleep(2)
-    misc_text.delete(1.0, "end")
+# level functions
 def button_level():
     global reqexp
     global level
     global y
+    global hpUp
+    global armorUp
+    global attackUp
+    global playerhp
     if reqexp <= 0:
-        sum = player.hp * 0.5
-        player.hp = player.hp + sum
-        y = y * 0.5
+        player.level = player.level + 1
         reqexp = player.reqexp + y
-        button_level_up.config(text="Level  \nUp     ")
+        button_level_up.config(text="Level Up")
+        hp_info.config(text="HP: " + str(playerhp))
+        hpUp = True
+        armorUp = True
+        attackUp = True
+        level_info.config(text="Level: " + str(player.level))
+        button_hp_up.config(text="HP( ) +")
+        button_armor_up.config(text="Armor( ) +")
+        button_attack_up.config(text="Attack( ) +")
 
         print("this worked!\n player.hp = " + str(player.hp))
         print("Y =  " + str(y))
+def button_hp():
+    global hpUp
+    global attackUp
+    global armorUp
+    if hpUp:
+        sum = player.hp * 0.25
+        player.hp = player.hp + sum
+        playerhp = player.hp
+        button_hp_up.config(text="HP( )")
+        button_armor_up.config(text="Armor( )")
+        button_attack_up.config(text="Attack( )")
+        hp_info.config(text="HP: " + str(playerhp))
+        hpUp = False
+        attackUp = False
+        armorUp = False
+# TODO make a function for HP, armor, and attack after clicking "level up" when you get enough xp
+# stats
+
+
+
 #mobs
 def rat_button():
     global money
     global playerhp
     mobhp = rat.hp
     mobname = rat.name
-    dungeon_text.insert(1.0, "An infected rat approaches!\n")
+    dungeon_text.insert(1.0, "A rat approaches!\n")
     root.update(), time.sleep(1)
     while True:
         mobdmg = random.randint(1, 2)
@@ -247,11 +292,13 @@ def rat_button():
             money = money + emoney
             reqexp = reqexp - exp
             root.update(), time.sleep(0.2)
-            dungeon_text.insert(1.0, mobname + " killed!\nLoot: $" + str(emoney))
+            dungeon_text.insert(1.0, mobname + " killed!\nLoot: $" + str(emoney) + "\nXP: " + str(rat.eexp))
+            hp_info.config(text="HP: " + str(playerhp))
+            bank_info.config(text="Bank: " + str(money))
             if reqexp <= 0:
                 global level
                 level = level + 1
-                button_level_up.config(text="Level  \nUp+     ")
+                button_level_up.config(text="Level Up +")
             break
         if playerhp <= 0:
             dungeon_text.delete(1.0, "end")
@@ -264,7 +311,7 @@ def kobald_button():
     global playerhp
     mobhp = kobald.hp
     mobname = kobald.name
-    dungeon_text.insert(1.0, "A rabid Kobald approaches!\n")
+    dungeon_text.insert(1.0, "A crazed Kobald approaches!\n")
     root.update(), time.sleep(1)
     while True:
         mobdmg = random.randint(2, 4)   # damage resides here for mob
@@ -287,11 +334,13 @@ def kobald_button():
             money = money + emoney
             reqexp = reqexp - exp
             root.update(), time.sleep(0.2)
-            dungeon_text.insert(1.0, mobname + " killed!\nLoot: $" + str(emoney))
+            dungeon_text.insert(1.0, mobname + " killed!\nLoot: $" + str(emoney) + "\nXP: " + str(kobald.eexp))
+            hp_info.config(text="HP: " + str(playerhp))
+            bank_info.config(text="Bank: " + str(money))
             if reqexp <= 0:
                 global level
                 level = level + 1
-                button_level_up.config(text="Level  \nUp+     ")
+                button_level_up.config(text="Level Up +")
             break
         if playerhp <= 0:
             dungeon_text.delete(1.0, "end")
@@ -310,16 +359,19 @@ button_Rat = Button(padx=25, pady=5, text="Rat", foreground="#ffffff", backgroun
 button_Kobald = Button(padx=25, pady=5, text="Kobald", foreground="#ffffff", background="gray", command=kobald_button)
 
 # random crap??
+dungeon_background = Label(image=dungeon_bg, height=400, width=445)
+sidebar_background = Label(image=sidebar_bg, height=400, width=15)
+shop_background = Label(image=shop_bg, height=700, width=500)
+level_background = Label(image=level_bg, height=150, width=450)
 button_restore_hp = Button(padx=2, pady=2, text="Heal    ", command=restore_health)
-dungeon_text = Text(height=50, width=50, background="black", borderwidth=0, foreground="white")
+dungeon_text = Text(height=10, width=40, background="black", borderwidth=1, foreground="white")
 side_bar = Label(padx=5, pady=241, background="white")
-button_Bank = Button(padx=2, pady=2, text="Bank     ", command=bank_button)
-button_Clear = Button(padx=2, pady=2, text="clear", command=clear)
 dung_info = Button(height=1, width=39, text="Dungeon Info", background="black", foreground="red", borderwidth=1, highlightcolor="red")
-warning = Button(height=10, width=35, text="WARNING: You die; You lose your progress.", background="black", foreground="red", borderwidth=0)
+warning = Label(height=1, width=35, text="WARNING: You die; You lose your progress.", background="black", foreground="red", borderwidth=0)
 bottom_bar = Label(padx=235, pady=2, background="white", text="Shop")
 give_money1 = Button(padx=2, pady=10, text="give mula", command=give_money)
 misc_text = Text(height=4, width=17, background="black",borderwidth=0, foreground="green")
+level_side_bar = Label(padx=190, pady=2, background="white", text="Level Panel")
 # weapons
 button_rusty_dagger = Button(height=4, width=14, text="Rusty Dagger\n$20", background="gray", command=rusty_dagger1)
 button_dagger = Button(height=4, width=14, text="Dagger\n$40", background="white", command=dagger1)
@@ -333,22 +385,41 @@ button_perfected_katana = Button(height=4, width=14, text="Perfected Katana\n$18
 button_enchanted_dagger = Button(height=4, width=14, text="Enchanted Dagger\n$200", background="purple", command=enchanted_dagger1)
 button_enchanted_sword = Button(height=4, width=14, text="Enchanted Sword\n$220", background="purple", command=enchanted_sword1)
 button_enchanted_katana = Button(height=4, width=14, text="Enchanted Katana\n$240", background="purple", command=enchanted_katana1)
-button_level_up = Button(height=2, width=5, text="Level  \nUp     ", background="white", command=button_level)
-
 button_dev_sword = Button(height=4, width=4, text="Dev", background="teal", command=dev_sword1)
+# level stuff
+button_level_up = Button(height=2, width=7, text="Level Up", background="white", command=button_level)
+button_hp_up = Button(height=3, width=7, text="HP( )", background="red", foreground="white", command=button_hp)
+button_attack_up = Button(height=3, width=7, text="Attack( )", background="green", foreground="white")
+button_armor_up = Button(height=3, width=7, text="Armor( )", background="blue", foreground="white")
+# stats
+level_info = Label(height=1, width=10, text="Level: 1", background="black", foreground="white")
+hp_info = Label(height=1, width=10, text="HP: 20", background="black", foreground="white")
+attack_info = Label(height=1, width=10, text="Attack: 1-2", background="black", foreground="white")
+armor_info = Label(height=1, width=10, text="Armor: 0", background="black", foreground="white")
+bank_info = Label(height=1, width=10, text="Bank: 0", background="black", foreground="white")
 
 
+
+
+
+# backgrounds
+#dungeon_background.place(x=0, y=0)
+shop_background.place(y=423)
+level_background.place(y=350)
 # enemies
 button_Rat.place(x=25, y=25)
 button_Kobald.place(x=25, y=65)
 # Bars
 side_bar.place(x=440)
 bottom_bar.place(y=500)
+level_side_bar.place(y=330)
 # Buttons
 button_dev_sword.place(x=460, y=420)
-button_level_up.place(x=458, y=70)
+button_level_up.place(x=193, y=355)
+button_hp_up.place(x=90, y=400)
+button_attack_up.place(x=193, y=400)
+button_armor_up.place(x=295, y=400)
 give_money1.pack()
-button_Bank.place(x=458, y=10)
 button_restore_hp.place(x=458, y=40)
 # 1st row
 button_rusty_dagger.place(x=15,y=525)
@@ -368,9 +439,14 @@ button_enchanted_katana.place(x=380,y=675)
 # Text
 dungeon_text.place(x=10 ,y=151)
 dung_info.place(x=10, y=120)
-warning.place(x=50, y=405)
+warning.place(x=50, y=310)
 misc_text.place(x=300, y=10)
-
+# stats
+level_info.place(x=350, y=145)
+hp_info.place(x=350, y=160)
+attack_info.place(x=350, y=175)
+armor_info.place(x=350, y=190)
+bank_info.place(x=350, y=205)
 
 root.mainloop()
 
