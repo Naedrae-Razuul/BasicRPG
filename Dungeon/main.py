@@ -14,7 +14,7 @@ import random
 from player import *
 from enemies import *
 import time
-from modules.PIL import ImageTk, Image
+from PIL import ImageTk, Image
 
 
 
