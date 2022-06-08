@@ -14,6 +14,7 @@ import random
 from player import *
 from enemies import *
 import time
+import os
 from PIL import ImageTk, Image
 
 
@@ -32,10 +33,10 @@ frame = Frame(width=500, height=500)
 
 # background creation (obviously)
 
-level_bg = ImageTk.PhotoImage(Image.open("C:/Users/natha/PycharmProjects/Dungeon/images/level_image.jpg"))
-shop_bg = ImageTk.PhotoImage(Image.open("C:/Users/natha/PycharmProjects/Dungeon/images/shop_image.jpg"))
-sidebar_bg = ImageTk.PhotoImage(Image.open("C:/Users/natha/PycharmProjects/Dungeon/images/sidebar_image.jpg"))
-dungeon_bg = ImageTk.PhotoImage(Image.open("C:/Users/natha/PycharmProjects/Dungeon/images/dungeon_image.jpg"))
+level_bg = ImageTk.PhotoImage(Image.open("images/level_image.jpg"))
+shop_bg = ImageTk.PhotoImage(Image.open("images/shop_image.jpg"))
+sidebar_bg = ImageTk.PhotoImage(Image.open("images/sidebar_image.jpg"))
+dungeon_bg = ImageTk.PhotoImage(Image.open("images/dungeon_image.jpg"))
 
 money = player.money
 player_hpp = player.hp
